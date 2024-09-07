@@ -4,4 +4,10 @@ export default defineNitroConfig({
     databaseUrl: 'sqlite:.data/db.sqlite',
     jwtSecret: 'secret',
   },
+  experimental: {
+    tasks: true,
+  },
+  scheduledTasks: {
+    '0 * * * *': ['update'],
+  },
 });
