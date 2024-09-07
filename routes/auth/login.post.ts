@@ -21,5 +21,9 @@ export default defineEventHandler(async (event) => {
     throw new Error('Invalid credentials');
   }
 
-  return {id: user.id};
+  return {
+    name: user.name,
+    email: user.email,
+    token: await useUser().generateToken(user),
+  };
 });

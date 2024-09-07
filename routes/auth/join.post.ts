@@ -21,5 +21,9 @@ export default defineEventHandler(async (event) => {
     password: sha256(body.password),
   });
 
-  return {id: user.id};
+  return {
+    name: user.name,
+    email: user.email,
+    token: await useUser().generateToken(user),
+  };
 });

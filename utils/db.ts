@@ -2,7 +2,7 @@ import {Sequelize, DataTypes, Model} from 'sequelize';
 
 let sequelize: Sequelize;
 
-class User extends Model {
+export class User extends Model {
   declare id: number;
   declare name: string;
   declare email: string;

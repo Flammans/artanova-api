@@ -2,5 +2,6 @@
 export default defineNitroConfig({
   runtimeConfig: {
     databaseUrl: 'sqlite:.data/db.sqlite',
+    jwtSecret: 'secret',
   },
 });
