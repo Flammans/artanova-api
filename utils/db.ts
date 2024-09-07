@@ -10,11 +10,11 @@ class User extends Model {
 }
 
 export function useDb () {
-  const config = useRuntimeConfig();
-
   return {
     User,
-    init: (): Sequelize => {
+    init: () => {
+      const config = useRuntimeConfig();
+
       sequelize = new Sequelize(config.databaseUrl);
 
       User.init(
@@ -41,7 +41,12 @@ export function useDb () {
           },
       );
 
-      return sequelize;
+      sequelize.sync({
+        alter: true,
+      });
+    },
+    close: () => {
+      sequelize.close();
     },
   };
 }

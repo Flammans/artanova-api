@@ -1,11 +1,9 @@
 export default defineNitroPlugin((nitro) => {
-  const sequelize = useDb().init();
+  const db = useDb();
 
-  sequelize.sync({
-    alter: true,
-  });
+  db.init();
 
   nitro.hooks.hookOnce('close', async () => {
-    sequelize.close();
+    db.close();
   });
 });
