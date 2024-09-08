@@ -2,12 +2,12 @@ import {H3Event} from 'h3';
 import {useJwt} from '~/utils/jwt';
 import User from '~/models/user';
 
-interface Payload {
-  id: number;
+interface JwtPayload {
+  userId: number;
 }
 
 export function useUser () {
-  const jwt = useJwt<Payload>();
+  const jwt = useJwt<JwtPayload>();
 
   return {
     getFromEvent: async (event: H3Event): Promise<User> => {
@@ -20,7 +20,7 @@ export function useUser () {
 
       const payload = await jwt.verify(token);
 
-      const user = await User.findByPk(payload.id);
+      const user = await User.findByPk(payload.userId);
 
       if (!user) {
         throw new Error('User not found');
@@ -30,7 +30,7 @@ export function useUser () {
     },
     generateToken: async (user: User): Promise<string> => {
       return jwt.sign({
-        id: user.id,
+        userId: user.id,
       });
     },
   };

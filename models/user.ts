@@ -1,6 +1,16 @@
-import {DataTypes, Model, ModelAttributes} from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  ModelAttributes,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 
-export default class extends Model {
+export default class User extends Model<
+    InferAttributes<User>,
+    InferCreationAttributes<User>
+> {
   static tableName = 'users';
 
   static attributes: ModelAttributes = {
@@ -21,8 +31,10 @@ export default class extends Model {
     },
   };
 
-  declare id: number;
+  declare id: CreationOptional<number>;
   declare name: string;
   declare email: string;
   declare password: string;
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
 }
