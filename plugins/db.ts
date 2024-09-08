@@ -1,7 +1,7 @@
 import {Sequelize} from 'sequelize';
 import User from '~/models/user';
 
-export default defineNitroPlugin(async (nitro) => {
+export default defineNitroPlugin((nitro) => {
   const config = useRuntimeConfig();
 
   const sequelize = new Sequelize(config.databaseUrl);
@@ -13,7 +13,7 @@ export default defineNitroPlugin(async (nitro) => {
     });
   });
 
-  await sequelize.sync({
+  sequelize.sync({
     alter: true,
   });
 
