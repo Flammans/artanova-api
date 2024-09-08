@@ -1,4 +1,4 @@
-import artic from '~/drivers/artic';
+import artic from '~/sources/artic';
 
 export default defineTask({
   meta: {
