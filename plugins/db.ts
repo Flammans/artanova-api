@@ -29,6 +29,8 @@ export class Artwork extends Model<
     InferCreationAttributes<Artwork>
 > {
   declare id: CreationOptional<number>;
+  declare sourceName: string;
+  declare sourceId: number;
   declare title: string;
   declare description: string | null;
   declare url: string | null;
@@ -88,6 +90,12 @@ export default defineNitroPlugin((nitro) => {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
+    },
+    sourceName: {
+      type: new DataTypes.STRING,
+    },
+    sourceId: {
+      type: new DataTypes.INTEGER,
     },
     title: {
       type: new DataTypes.STRING,
