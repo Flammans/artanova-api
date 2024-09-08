@@ -1,4 +1,4 @@
-import {Artwork} from '~/plugins/db';
+import {Artwork, Image} from '~/plugins/db';
 
 const sourceName = 'artic';
 const baseURL = 'https://api.artic.edu/api/v1';
@@ -27,13 +27,26 @@ export default async function() {
 
       artwork.title = item.title;
       artwork.description = item.description;
-      artwork.url = `https://www.artic.edu/artworks/${item.id}`;
+      artwork.url = `${response.config.website_url}/artworks/${item.id}`;
       artwork.creditLine = item.credit_line;
       artwork.date = item.date_display;
       artwork.origin = item.place_of_origin;
       artwork.medium = item.medium_display;
 
       await artwork.save();
+
+      for (const imageId of [item.image_id, ...item.alt_image_ids]) {
+        const [image] = await Image.findOrBuild({
+          where: {
+            artworkId: artwork.id,
+            sourceId: imageId,
+          },
+        });
+
+        image.urlPreview = `${response.config.iiif_url}/${imageId}/full/843,/0/default.jpg`;
+        image.urlFull = `${response.config.iiif_url}/${imageId}/full/full/0/default.jpg`;
+        await image.save();
+      }
     }
 
     if (page === response.pagination.total_pages || (page + 1) * limit > 10_000) {

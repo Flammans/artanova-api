@@ -1,6 +1,6 @@
 import {defineEventHandler, getValidatedQuery} from 'h3';
 import {z} from 'zod';
-import {Artwork} from '~/plugins/db';
+import {Artwork, Image} from '~/plugins/db';
 
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
     offset: (query.page - 1) * query.limit,
     limit: query.limit,
     order: [['updatedAt', 'DESC']],
+    include: [Image],
   });
 
   return {
