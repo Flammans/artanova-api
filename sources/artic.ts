@@ -36,6 +36,10 @@ export default async function() {
       await artwork.save();
 
       for (const imageId of [item.image_id, ...item.alt_image_ids]) {
+        if (!imageId) {
+          continue;
+        }
+
         const [image] = await Image.findOrBuild({
           where: {
             artworkId: artwork.id,

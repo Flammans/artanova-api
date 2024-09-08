@@ -68,7 +68,7 @@ export default defineNitroPlugin(async (nitro) => {
 
   User.init({
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -84,7 +84,7 @@ export default defineNitroPlugin(async (nitro) => {
 
   Artwork.init({
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -106,7 +106,7 @@ export default defineNitroPlugin(async (nitro) => {
 
   Image.init({
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -120,10 +120,10 @@ export default defineNitroPlugin(async (nitro) => {
     sequelize,
   });
 
-  Artwork.hasMany(Image, {foreignKey: 'artworkId'});
-  Image.belongsTo(Artwork, {foreignKey: 'artworkId'});
+  Artwork.hasMany(Image, {foreignKey: 'artworkId', constraints: false});
+  Image.belongsTo(Artwork, {foreignKey: 'artworkId', constraints: false});
 
-  await sequelize.query('PRAGMA foreign_keys = false;');
-  await sequelize.sync({alter: true});
-  await sequelize.query('PRAGMA foreign_keys = true;');
+  await sequelize.sync({
+    alter: true,
+  });
 });
