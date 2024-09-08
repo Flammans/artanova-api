@@ -21,7 +21,7 @@ export default async function() {
       const [artwork] = await Artwork.findOrBuild({
         where: {
           sourceName,
-          sourceId: item.id,
+          sourceId: `${item.id}`,
         },
       });
 

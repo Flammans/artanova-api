@@ -30,7 +30,7 @@ export class Artwork extends Model<
 > {
   declare id: CreationOptional<number>;
   declare sourceName: string;
-  declare sourceId: number;
+  declare sourceId: string;
   declare title: string;
   declare description: string | null;
   declare url: string | null;
@@ -39,8 +39,6 @@ export class Artwork extends Model<
   declare origin: string | null;
   declare medium: string | null;
   declare images?: NonAttribute<Image[]>;
-  declare getImages: HasManyGetAssociationsMixin<Image>;
-  declare addImage: HasManyAddAssociationMixin<Image, number>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -50,9 +48,11 @@ export class Image extends Model<
     InferCreationAttributes<Image>
 > {
   declare id: CreationOptional<number>;
+  declare sourceId: string;
   declare artworkId: ForeignKey<Artwork['id']>;
   declare artwork: NonAttribute<Artwork>;
-  declare url: string;
+  declare urlPreview: string;
+  declare urlFull: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -68,16 +68,9 @@ export default defineNitroPlugin((nitro) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    name: {
-      type: new DataTypes.STRING,
-    },
-    email: {
-      type: new DataTypes.STRING,
-      unique: true,
-    },
-    password: {
-      type: new DataTypes.STRING,
-    },
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {
@@ -91,39 +84,15 @@ export default defineNitroPlugin((nitro) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    sourceName: {
-      type: new DataTypes.STRING,
-    },
-    sourceId: {
-      type: new DataTypes.INTEGER,
-    },
-    title: {
-      type: new DataTypes.STRING,
-    },
-    description: {
-      type: new DataTypes.STRING,
-      allowNull: true,
-    },
-    url: {
-      type: new DataTypes.STRING,
-      allowNull: true,
-    },
-    creditLine: {
-      type: new DataTypes.STRING,
-      allowNull: true,
-    },
-    date: {
-      type: new DataTypes.STRING,
-      allowNull: true,
-    },
-    origin: {
-      type: new DataTypes.STRING,
-      allowNull: true,
-    },
-    medium: {
-      type: new DataTypes.STRING,
-      allowNull: true,
-    },
+    sourceName: DataTypes.STRING,
+    sourceId: DataTypes.STRING,
+    title: DataTypes.STRING,
+    description: DataTypes.TEXT,
+    url: DataTypes.STRING,
+    creditLine: DataTypes.TEXT,
+    date: DataTypes.STRING,
+    origin: DataTypes.STRING,
+    medium: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {
@@ -137,9 +106,9 @@ export default defineNitroPlugin((nitro) => {
       autoIncrement: true,
       primaryKey: true,
     },
-    url: {
-      type: new DataTypes.STRING,
-    },
+    sourceId: DataTypes.STRING,
+    urlPreview: DataTypes.STRING,
+    urlFull: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   }, {
@@ -147,8 +116,8 @@ export default defineNitroPlugin((nitro) => {
     sequelize,
   });
 
-  Artwork.hasMany(Image);
-  Image.belongsTo(Artwork);
+  Artwork.hasMany(Image, {foreignKey: 'artworkId'});
+  Image.belongsTo(Artwork, {foreignKey: 'artworkId'});
 
   sequelize.sync({
     alter: true,
