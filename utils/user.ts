@@ -1,12 +1,14 @@
 import {H3Event} from 'h3';
-import {User} from '~/plugins/db';
+import {Prisma} from '@prisma/client';
 
-interface JwtPayload {
+type User = Prisma.UserGetPayload<{}>
+type JwtPayload = {
   userId: number;
 }
 
 export function useUser () {
   const jwt = useJwt<JwtPayload>();
+  const prisma = usePrisma();
 
   return {
     getFromEvent: async (event: H3Event): Promise<User> => {
@@ -19,7 +21,11 @@ export function useUser () {
 
       const payload = await jwt.verify(token);
 
-      const user = await User.findByPk(payload.userId);
+      const user = await prisma.user.findUnique({
+        where: {
+          id: payload.userId,
+        },
+      });
 
       if (!user) {
         throw new Error('User not found');

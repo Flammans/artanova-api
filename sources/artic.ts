@@ -1,9 +1,9 @@
-import {Artwork, Image} from '~/plugins/db';
-
 const sourceName = 'artic';
 const baseURL = 'https://api.artic.edu/api/v1';
 
 export default async function() {
+  const prisma = usePrisma();
+
   const limit = 100;
   let page = 1;
 
@@ -18,38 +18,56 @@ export default async function() {
     });
 
     for (const item of response.data) {
-      const [artwork] = await Artwork.findOrBuild({
+      const artworkId = `${sourceName}:${item.id}`;
+      const artworkAttributes = {
+        title: item.title,
+        description: item.description,
+        url: `${response.config.website_url}/artworks/${item.id}`,
+        creditLine: item.credit_line,
+        date: item.date_display,
+        origin: item.place_of_origin,
+        medium: item.medium_display,
+      };
+
+      await prisma.artwork.upsert({
         where: {
-          sourceName,
-          sourceId: `${item.id}`,
+          id: artworkId,
+        },
+        create: {
+          id: artworkId,
+          ...artworkAttributes,
+        },
+        update: artworkAttributes,
+        select: {
+          id: true,
         },
       });
 
-      artwork.title = item.title;
-      artwork.description = item.description;
-      artwork.url = `${response.config.website_url}/artworks/${item.id}`;
-      artwork.creditLine = item.credit_line;
-      artwork.date = item.date_display;
-      artwork.origin = item.place_of_origin;
-      artwork.medium = item.medium_display;
-
-      await artwork.save();
-
-      for (const imageId of [item.image_id, ...item.alt_image_ids]) {
-        if (!imageId) {
+      for (const imageSourceId of [item.image_id, ...item.alt_image_ids]) {
+        if (!imageSourceId) {
           continue;
         }
 
-        const [image] = await Image.findOrBuild({
+        const imageId = `${sourceName}:${imageSourceId}`;
+        const imageAttributes = {
+          urlPreview: `${response.config.iiif_url}/${imageSourceId}/full/843,/0/default.jpg`,
+          urlFull: `${response.config.iiif_url}/${imageSourceId}/full/full/0/default.jpg`,
+        };
+
+        await prisma.image.upsert({
           where: {
-            artworkId: artwork.id,
-            sourceId: imageId,
+            id: imageId,
+          },
+          create: {
+            id: imageId,
+            artworkId,
+            ...imageAttributes,
+          },
+          update: imageAttributes,
+          select: {
+            id: true,
           },
         });
-
-        image.urlPreview = `${response.config.iiif_url}/${imageId}/full/843,/0/default.jpg`;
-        image.urlFull = `${response.config.iiif_url}/${imageId}/full/full/0/default.jpg`;
-        await image.save();
       }
     }
 

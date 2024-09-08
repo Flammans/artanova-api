@@ -1,7 +1,6 @@
 import {defineEventHandler, readValidatedBody} from 'h3';
 import {z} from 'zod';
 import {sha256} from 'ohash';
-import {User} from '~/plugins/db';
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, z.object({
@@ -10,14 +9,18 @@ export default defineEventHandler(async (event) => {
     password: z.string().min(8),
   }).parse);
 
-  if (await User.findOne({where: {email: body.email}})) {
+  const prisma = usePrisma();
+
+  if (await prisma.user.findUnique({where: {email: body.email}})) {
     throw new Error('Email already in use');
   }
 
-  const user = await User.create({
-    name: body.name,
-    email: body.email,
-    password: sha256(body.password),
+  const user = await prisma.user.create({
+    data: {
+      name: body.name,
+      email: body.email,
+      password: sha256(body.password),
+    },
   });
 
   return {

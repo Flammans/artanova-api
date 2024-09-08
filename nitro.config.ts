@@ -1,7 +1,7 @@
 //https://nitro.unjs.io/config
 export default defineNitroConfig({
   runtimeConfig: {
-    databaseUrl: 'sqlite:db.sqlite',
+    databaseUrl: '',
     jwtSecret: 'secret',
   },
   experimental: {

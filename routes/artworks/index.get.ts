@@ -1,22 +1,28 @@
 import {defineEventHandler, getValidatedQuery} from 'h3';
 import {z} from 'zod';
-import {Artwork, Image} from '~/plugins/db';
 
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
-    page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().default(10),
+    cursor: z.string().optional(),
   }).parse);
 
-  const {count, rows: artworks} = await Artwork.findAndCountAll({
-    offset: (query.page - 1) * query.limit,
-    limit: query.limit,
-    order: [['updatedAt', 'DESC']],
-    include: [Image],
+  const prisma = usePrisma();
+
+  const artworks = await prisma.artwork.findMany({
+    take: query.limit,
+    cursor: query.cursor ? {
+      id: query.cursor,
+    } : undefined,
+    orderBy: {
+      updatedAt: 'desc',
+    },
+    include: {
+      images: true,
+    },
   });
 
   return {
-    count,
     artworks,
   };
 });
