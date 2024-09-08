@@ -1,21 +1,26 @@
+import Bottleneck from 'bottleneck';
+
 const sourceName = 'artic';
 const baseURL = 'https://api.artic.edu/api/v1';
 
 export default async function() {
   const prisma = usePrisma();
+  const limiter = new Bottleneck({
+    minTime: 1_000,
+  });
 
   const limit = 100;
   let page = 1;
 
   while (true) {
-    const response = await $fetch<any>(`/artworks`, {
+    const response = await limiter.schedule(() => $fetch<any>(`/artworks`, {
       baseURL,
       query: {
         // @TODO fields: 'id,title,...',
         page,
         limit,
       },
-    });
+    }));
 
     for (const item of response.data) {
       const artworkId = `${sourceName}:${item.id}`;
@@ -75,7 +80,6 @@ export default async function() {
       return;
     }
 
-    await useWait(1_000);
     page++;
   }
 };
