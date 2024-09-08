@@ -1,6 +1,6 @@
 import {H3Event} from 'h3';
 import {useJwt} from '~/utils/jwt';
-import {User} from '~/utils/db';
+import User from '~/models/user';
 
 interface Payload {
   id: number;

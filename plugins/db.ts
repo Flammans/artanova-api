@@ -1,9 +1,23 @@
-export default defineNitroPlugin((nitro) => {
-  const db = useDb();
+import {Sequelize} from 'sequelize';
+import User from '~/models/user';
 
-  db.init();
+export default defineNitroPlugin(async (nitro) => {
+  const config = useRuntimeConfig();
+
+  const sequelize = new Sequelize(config.databaseUrl);
+
+  [User].forEach((model) => {
+    model.init(model.attributes, {
+      sequelize,
+      tableName: model.tableName,
+    });
+  });
+
+  await sequelize.sync({
+    alter: true,
+  });
 
   nitro.hooks.hookOnce('close', async () => {
-    db.close();
+    sequelize.close();
   });
 });

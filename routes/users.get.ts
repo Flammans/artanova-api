@@ -1,5 +1,5 @@
-export default defineEventHandler(() => {
-  const {User} = useDb();
+import User from '~/models/user';
 
+export default defineEventHandler(() => {
   return {hello: User.findAll()};
 });
