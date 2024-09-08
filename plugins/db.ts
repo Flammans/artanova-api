@@ -57,10 +57,14 @@ export class Image extends Model<
   declare updatedAt: CreationOptional<Date>;
 }
 
-export default defineNitroPlugin((nitro) => {
+export default defineNitroPlugin(async (nitro) => {
   const config = useRuntimeConfig();
 
   const sequelize = new Sequelize(config.databaseUrl);
+
+  nitro.hooks.hookOnce('close', async () => {
+    sequelize.close();
+  });
 
   User.init({
     id: {
@@ -119,11 +123,7 @@ export default defineNitroPlugin((nitro) => {
   Artwork.hasMany(Image, {foreignKey: 'artworkId'});
   Image.belongsTo(Artwork, {foreignKey: 'artworkId'});
 
-  sequelize.sync({
-    alter: true,
-  });
-
-  nitro.hooks.hookOnce('close', async () => {
-    sequelize.close();
-  });
+  await sequelize.query('PRAGMA foreign_keys = false;');
+  await sequelize.sync({alter: true});
+  await sequelize.query('PRAGMA foreign_keys = true;');
 });
