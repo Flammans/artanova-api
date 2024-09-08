@@ -1,7 +1,7 @@
 import {defineEventHandler, readValidatedBody} from 'h3';
 import {sha256} from 'ohash';
 import {z} from 'zod';
-import User from '~/models/user';
+import {User} from '~/plugins/db';
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, z.object({
