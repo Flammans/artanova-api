@@ -22,7 +22,5 @@ export default defineEventHandler(async (event) => {
     },
   });
 
-  return {
-    artworks,
-  };
+  return artworks;
 });
