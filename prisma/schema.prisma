@@ -18,35 +18,45 @@ model User {
 }
 
 model Artwork {
-  id          String       @id @db.VarChar()
-  title       String       @db.VarChar()
-  description String?      @db.Text()
-  url         String?      @db.VarChar()
-  creditLine  String?      @db.VarChar()
-  date        String?      @db.VarChar()
-  origin      String?      @db.VarChar()
-  medium      String?      @db.VarChar()
-  createdAt   DateTime     @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime     @updatedAt @db.Timestamp(6)
+  id          String    @id @db.VarChar()
+  title       String    @db.VarChar()
+  description String?   @db.Text()
+  url         String?   @db.VarChar()
+  creditLine  String?   @db.VarChar()
+  date        String?   @db.VarChar()
+  origin      String?   @db.VarChar()
+  medium      String?   @db.VarChar()
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt @db.Timestamp(6)
   images      Image[]
-  collections Collection[]
+  elements    Element[]
 }
 
 model Image {
-  id         String   @id @db.VarChar()
-  urlPreview String   @db.VarChar()
-  urlFull    String   @db.VarChar()
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
-  artworkId  String   @db.VarChar()
-  artwork    Artwork  @relation(fields: [artworkId], references: [id])
+  id         String  @id @db.VarChar()
+  urlPreview String  @db.VarChar()
+  urlFull    String  @db.VarChar()
+  artworkId  String  @db.VarChar()
+  artwork    Artwork @relation(fields: [artworkId], references: [id])
 }
 
 model Collection {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(cuid()) @db.VarChar(30)
   title     String    @db.VarChar()
   createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt @db.Timestamp(6)
   userId    Int
   user      User      @relation(fields: [userId], references: [id])
-  artworks  Artwork[]
+  elements  Element[]
+}
+
+model Element {
+  id           Int        @id @default(autoincrement())
+  collectionId String     @db.VarChar(30)
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  artworkId    String     @db.VarChar()
+  artwork      Artwork    @relation(fields: [artworkId], references: [id])
+  sort         Int        @default(0)
+  createdAt    DateTime   @default(now()) @db.Timestamp(6)
+
+  @@unique([collectionId, artworkId])
 }

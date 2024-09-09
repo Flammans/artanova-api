@@ -1,4 +1,4 @@
-export default eventHandler((event) => {
+export default defineEventHandler((event) => {
   runTask('update');
 
   return 'OK';

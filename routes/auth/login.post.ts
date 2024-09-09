@@ -1,4 +1,3 @@
-import {defineEventHandler, readValidatedBody} from 'h3';
 import {sha256} from 'ohash';
 import {z} from 'zod';
 
