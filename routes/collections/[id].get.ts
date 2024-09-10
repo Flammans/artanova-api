@@ -13,11 +13,7 @@ export default defineEventHandler(async (event) => {
     include: {
       elements: {
         include: {
-          artwork: {
-            include: {
-              images: true,
-            },
-          },
+          artwork: true,
         },
       },
     },

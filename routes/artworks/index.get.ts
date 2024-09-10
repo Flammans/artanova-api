@@ -17,9 +17,6 @@ export default defineEventHandler(async (event) => {
     orderBy: {
       updatedAt: 'desc',
     },
-    include: {
-      images: true,
-    },
   });
 
   return artworks;

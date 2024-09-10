@@ -26,18 +26,11 @@ model Artwork {
   date        String?   @db.VarChar()
   origin      String?   @db.VarChar()
   medium      String?   @db.VarChar()
+  preview     String    @db.VarChar()
+  images      Json      @db.JsonB()
   createdAt   DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime  @updatedAt @db.Timestamp(6)
-  images      Image[]
+  updatedAt   DateTime  @db.Timestamp(6)
   elements    Element[]
-}
-
-model Image {
-  id         String  @id @db.VarChar()
-  urlPreview String  @db.VarChar()
-  urlFull    String  @db.VarChar()
-  artworkId  String  @db.VarChar()
-  artwork    Artwork @relation(fields: [artworkId], references: [id])
 }
 
 model Collection {

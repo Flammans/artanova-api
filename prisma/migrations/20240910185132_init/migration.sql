@@ -20,6 +20,8 @@ CREATE TABLE "Artwork" (
     "date" VARCHAR,
     "origin" VARCHAR,
     "medium" VARCHAR,
+    "preview" VARCHAR NOT NULL,
+    "images" JSONB NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(6) NOT NULL,
 
@@ -27,50 +29,37 @@ CREATE TABLE "Artwork" (
 );
 
 -- CreateTable
-CREATE TABLE "Image" (
-    "id" VARCHAR NOT NULL,
-    "urlPreview" VARCHAR NOT NULL,
-    "urlFull" VARCHAR NOT NULL,
-    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "artworkId" VARCHAR NOT NULL,
-
-    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Collection" (
-    "id" SERIAL NOT NULL,
+    "id" VARCHAR(30) NOT NULL,
     "title" VARCHAR NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(6) NOT NULL,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Collection_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "_ArtworkToCollection" (
-    "A" VARCHAR NOT NULL,
-    "B" INTEGER NOT NULL
+CREATE TABLE "Element" (
+    "id" SERIAL NOT NULL,
+    "collectionId" VARCHAR(30) NOT NULL,
+    "artworkId" VARCHAR NOT NULL,
+    "sort" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Element_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_ArtworkToCollection_AB_unique" ON "_ArtworkToCollection"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_ArtworkToCollection_B_index" ON "_ArtworkToCollection"("B");
-
--- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_artworkId_fkey" FOREIGN KEY ("artworkId") REFERENCES "Artwork"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+CREATE UNIQUE INDEX "Element_collectionId_artworkId_key" ON "Element"("collectionId", "artworkId");
 
 -- AddForeignKey
 ALTER TABLE "Collection" ADD CONSTRAINT "Collection_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_ArtworkToCollection" ADD CONSTRAINT "_ArtworkToCollection_A_fkey" FOREIGN KEY ("A") REFERENCES "Artwork"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Element" ADD CONSTRAINT "Element_collectionId_fkey" FOREIGN KEY ("collectionId") REFERENCES "Collection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_ArtworkToCollection" ADD CONSTRAINT "_ArtworkToCollection_B_fkey" FOREIGN KEY ("B") REFERENCES "Collection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Element" ADD CONSTRAINT "Element_artworkId_fkey" FOREIGN KEY ("artworkId") REFERENCES "Artwork"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
