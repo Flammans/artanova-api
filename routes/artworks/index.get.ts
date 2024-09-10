@@ -2,10 +2,12 @@ import {defineEventHandler, getValidatedQuery} from 'h3';
 import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
-  const {limit, cursor, query} = await getValidatedQuery(event, z.object({
+  const {limit, cursor, query, sort, order} = await getValidatedQuery(event, z.object({
     limit: z.coerce.number().int().positive().max(1_000).default(10),
     cursor: z.number().optional(),
     query: z.string().optional(),
+    sort: z.enum(['updatedAt']).default('updatedAt'),
+    order: z.enum(['asc', 'desc']).default('desc'),
   }).parse);
 
   const prisma = usePrisma();
@@ -16,7 +18,7 @@ export default defineEventHandler(async (event) => {
       id: cursor,
     } : undefined,
     orderBy: {
-      updatedAt: 'desc',
+      [sort]: order,
     },
     where: {
       ...(query ? {
