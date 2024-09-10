@@ -6,9 +6,7 @@
         "dev": "nitro dev",
         "prepare": "nitro prepare && prisma generate",
         "preview": "node .output/server/index.mjs",
-        "update": "nitro task run update",
-        "migrate:dev": "prisma migrate dev",
-        "migrate": "prisma migrate deploy"
+        "update": "nitro task run update"
     },
     "devDependencies": {
         "prisma": "^5.19.1"

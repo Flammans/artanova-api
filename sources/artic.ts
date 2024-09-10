@@ -8,7 +8,10 @@ const limiter = new Bottleneck({
   minTime: 1_000, // 60 requests per minute
 });
 
+let artworksLeft: number | null = 0;
+
 export default async function() {
+  artworksLeft = useRuntimeConfig().artworksLimit || null;
   const limit = 100;
   let page = 1;
 
@@ -17,6 +20,10 @@ export default async function() {
 
     for (const object of data) {
       await importObject(object, config);
+
+      if (artworksLeft !== null && artworksLeft <= 0) {
+        return;
+      }
     }
 
     if (page === pagination.total_pages || (page + 1) * limit > 10_000) {
@@ -73,4 +80,8 @@ async function importObject (object: any, config: any) {
       id: true,
     },
   });
+
+  if (artworksLeft !== null) {
+    artworksLeft--;
+  }
 }

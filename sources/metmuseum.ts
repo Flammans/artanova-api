@@ -8,7 +8,10 @@ const limiter = new Bottleneck({
   minTime: 1_000 / 80, // 80 requests per second
 });
 
+let artworksLeft: number | null = 0;
+
 export default async function() {
+  artworksLeft = useRuntimeConfig().artworksLimit || null;
   const prisma = usePrisma();
 
   const lastUpdatedArtwork = await prisma.artwork.findFirst({
@@ -30,6 +33,10 @@ export default async function() {
 
     for (const objectID of objectIDs) {
       await importObject(objectID);
+
+      if (artworksLeft !== null && artworksLeft <= 0) {
+        return;
+      }
     }
   }
 
@@ -51,6 +58,10 @@ export default async function() {
     }
 
     await importObject(objectID);
+
+    if (artworksLeft !== null && artworksLeft <= 0) {
+      return;
+    }
   }
 }
 
@@ -107,4 +118,8 @@ async function importObject (objectID: number) {
       id: true,
     },
   });
+
+  if (artworksLeft !== null) {
+    artworksLeft--;
+  }
 }

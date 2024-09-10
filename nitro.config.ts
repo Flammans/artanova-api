@@ -3,6 +3,7 @@ export default defineNitroConfig({
   runtimeConfig: {
     databaseUrl: '',
     jwtSecret: 'secret',
+    artworksLimit: 100,
   },
   experimental: {
     tasks: true,
