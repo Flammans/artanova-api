@@ -3,7 +3,7 @@ import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
-    limit: z.coerce.number().int().positive().default(10),
+    limit: z.coerce.number().int().positive().max(1_000).default(10),
     cursor: z.number().optional(),
   }).parse);
 
