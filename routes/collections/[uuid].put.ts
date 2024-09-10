@@ -1,19 +1,19 @@
 import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
-  const params = await getValidatedRouterParams(event, z.object({
-    id: z.string().cuid(),
+  const {uuid} = await getValidatedRouterParams(event, z.object({
+    uuid: z.string().uuid(),
   }).parse);
-  const body = await readValidatedBody(event, z.object({
+  const {title, elementIds} = await readValidatedBody(event, z.object({
     title: z.string(),
-    elements: z.number().array(),
+    elementIds: z.number().array(),
   }).parse);
   const user = await useUser().getFromEvent(event);
   const prisma = usePrisma();
 
   const collection = await prisma.collection.findFirstOrThrow({
     where: {
-      id: params.id,
+      uuid,
       userId: user.id,
     },
   });
@@ -23,19 +23,19 @@ export default defineEventHandler(async (event) => {
       id: collection.id,
     },
     data: {
-      title: body.title,
+      title: title,
     },
   });
 
-  let i = 0;
-  for (const elementId of body.elements) {
+  let sortValue = elementIds.length;
+  for (const elementId of elementIds) {
     await prisma.element.update({
       where: {
         id: elementId,
         collectionId: collection.id,
       },
       data: {
-        sort: i++,
+        sort: sortValue--,
       },
     });
   }
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
       collectionId: collection.id,
       NOT: {
         id: {
-          in: body.elements,
+          in: elementIds,
         },
       },
     },

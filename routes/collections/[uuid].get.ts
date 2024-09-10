@@ -1,14 +1,14 @@
 import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
-  const params = await getValidatedRouterParams(event, z.object({
-    id: z.string().cuid(),
+  const {uuid} = await getValidatedRouterParams(event, z.object({
+    uuid: z.string().uuid(),
   }).parse);
   const prisma = usePrisma();
 
   const collection = await prisma.collection.findUniqueOrThrow({
     where: {
-      id: params.id,
+      uuid,
     },
     include: {
       elements: {

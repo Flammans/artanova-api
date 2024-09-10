@@ -8,47 +8,57 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  name       String       @db.VarChar()
-  email      String       @unique()
-  password   String       @db.VarChar()
-  createdAt  DateTime     @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime     @updatedAt @db.Timestamp(6)
-  Collection Collection[]
+  id          Int          @id @default(autoincrement()) @db.Integer
+  name        String       @db.VarChar
+  email       String       @unique() @db.VarChar
+  password    String       @db.VarChar(64)
+  createdAt   DateTime     @default(now()) @db.Timestamp
+  updatedAt   DateTime     @updatedAt @db.Timestamp
+  collections Collection[]
+}
+
+enum SourceName {
+  artic
+  metmuseum
 }
 
 model Artwork {
-  id          String    @id @db.VarChar()
-  title       String    @db.VarChar()
-  description String?   @db.Text()
-  url         String?   @db.VarChar()
-  creditLine  String?   @db.VarChar()
-  date        String?   @db.VarChar()
-  origin      String?   @db.VarChar()
-  medium      String?   @db.VarChar()
-  preview     String    @db.VarChar()
-  images      Json      @db.JsonB()
-  createdAt   DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime  @db.Timestamp(6)
-  elements    Element[]
+  id         Int        @id @default(autoincrement()) @db.Integer
+  sourceName SourceName
+  sourceId   String     @db.VarChar(36)
+  title      String     @db.VarChar
+  url        String?    @db.VarChar
+  creditLine String?    @db.VarChar
+  date       String?    @db.VarChar
+  origin     String?    @db.VarChar
+  medium     String?    @db.VarChar
+  preview    String     @db.VarChar
+  images     Json       @db.JsonB
+  createdAt  DateTime   @default(now()) @db.Timestamp
+  updatedAt  DateTime   @db.Timestamp
+  elements   Element[]
+
+  @@unique([sourceName, sourceId])
+  @@index([sourceName])
 }
 
 model Collection {
-  id        String    @id @default(cuid()) @db.VarChar(30)
-  title     String    @db.VarChar()
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  userId    Int
+  id        Int       @id @default(autoincrement()) @db.Integer
+  uuid      String    @unique @default(uuid()) @db.Uuid
+  userId    Int       @db.Integer
   user      User      @relation(fields: [userId], references: [id])
+  title     String    @db.VarChar
+  createdAt DateTime  @default(now()) @db.Timestamp
   elements  Element[]
 }
 
 model Element {
-  id           Int        @id @default(autoincrement())
-  collectionId String     @db.VarChar(30)
+  id           Int        @id @default(autoincrement()) @db.Integer
+  collectionId Int        @db.Integer
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  artworkId    String     @db.VarChar()
+  artworkId    Int        @db.Integer
   artwork      Artwork    @relation(fields: [artworkId], references: [id])
-  sort         Int        @default(0)
+  sort         Int        @default(0) @db.SmallInt
   createdAt    DateTime   @default(now()) @db.Timestamp(6)
 
   @@unique([collectionId, artworkId])

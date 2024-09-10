@@ -1,18 +1,18 @@
 import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
-  const params = await getValidatedRouterParams(event, z.object({
-    id: z.string().cuid(),
+  const {uuid} = await getValidatedRouterParams(event, z.object({
+    uuid: z.string().uuid(),
   }).parse);
   const body = await readValidatedBody(event, z.object({
-    artworkId: z.string(),
+    artworkId: z.number(),
   }).parse);
   const user = await useUser().getFromEvent(event);
   const prisma = usePrisma();
 
   const collection = await prisma.collection.findFirstOrThrow({
     where: {
-      id: params.id,
+      uuid,
       userId: user.id,
     },
   });

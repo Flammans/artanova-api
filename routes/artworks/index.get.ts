@@ -4,7 +4,7 @@ import {z} from 'zod';
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
     limit: z.coerce.number().int().positive().default(10),
-    cursor: z.string().optional(),
+    cursor: z.number().optional(),
   }).parse);
 
   const prisma = usePrisma();

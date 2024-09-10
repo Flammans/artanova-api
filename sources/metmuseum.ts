@@ -1,7 +1,8 @@
 import Bottleneck from 'bottleneck';
+import {SourceName} from '@prisma/client';
 
 /** @see https://metmuseum.github.io/ */
-const sourceName = 'metmuseum';
+const sourceName: SourceName = 'metmuseum';
 const baseURL = 'https://collectionapi.metmuseum.org/public/collection/v1';
 const limiter = new Bottleneck({
   minTime: 1_000 / 80, // 80 requests per second
@@ -12,9 +13,7 @@ export default async function() {
 
   const lastUpdatedArtwork = await prisma.artwork.findFirst({
     where: {
-      id: {
-        startsWith: `${sourceName}:`,
-      },
+      sourceName,
     },
     select: {
       updatedAt: true,
@@ -34,24 +33,20 @@ export default async function() {
     }
   }
 
-  const lowestIDArtwork = await prisma.artwork.findFirst({
-    where: {
-      id: {
-        startsWith: `${sourceName}:`,
-      },
-    },
-    select: {
-      id: true,
-    },
-    orderBy: {
-      id: 'asc',
-    },
-  });
+  const [lowestIDArtwork] = await prisma.$queryRawUnsafe<{
+    sourceId: string
+  }[]>(`
+      SELECT "Artwork"."sourceId"
+      FROM "Artwork"
+      WHERE "Artwork"."sourceName" = '${sourceName}'
+      ORDER BY "Artwork"."sourceId"::int ASC
+      LIMIT 1
+  `);
 
   const {objectIDs} = await fetchObjects();
 
   for (const objectID of objectIDs.reverse()) {
-    if (lowestIDArtwork && `${sourceName}:${objectID}` >= lowestIDArtwork.id) {
+    if (lowestIDArtwork && objectID >= lowestIDArtwork.sourceId) {
       continue;
     }
 
@@ -79,8 +74,12 @@ async function importObject (objectID: number) {
     return;
   }
 
-  const artworkId = `${sourceName}:${object.objectID}`;
-  const artworkAttributes = {
+  const sourceName_sourceId = {
+    sourceName,
+    sourceId: `${objectID}`,
+  };
+
+  const attributes = {
     title: object.title,
     url: object.objectURL,
     creditLine: object.creditLine,
@@ -97,13 +96,13 @@ async function importObject (objectID: number) {
 
   await usePrisma().artwork.upsert({
     where: {
-      id: artworkId,
+      sourceName_sourceId,
     },
     create: {
-      id: artworkId,
-      ...artworkAttributes,
+      ...sourceName_sourceId,
+      ...attributes,
     },
-    update: artworkAttributes,
+    update: attributes,
     select: {
       id: true,
     },

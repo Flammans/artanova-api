@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 export default defineEventHandler(async (event) => {
-  const body = await readValidatedBody(event, z.object({
+  const {title} = await readValidatedBody(event, z.object({
     title: z.string(),
   }).parse);
   const user = await useUser().getFromEvent(event);
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
   const collection = await prisma.collection.create({
     data: {
-      title: body.title,
+      title,
       userId: user.id,
     },
   });
