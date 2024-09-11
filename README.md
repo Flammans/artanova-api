@@ -1,4 +1,9 @@
-# Art API
+# Exhibition Curator Project API
+
+The project is hosted on [Render](https://render.com/) (both API and database)
+but can be deployed on any other platform that supports Node.js.
+
+The project uses [Nitro](https://nitro.unjs.io/) as a framework and PostgreSQL as a database.
 
 ## Local run
 
@@ -6,9 +11,8 @@ You can run the server using Docker or manually.
 
 ### Docker
 
-```shell
-docker compose up
-```
+Just
+`docker compose up`
 
 ### Manually
 
