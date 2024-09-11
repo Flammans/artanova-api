@@ -5,8 +5,9 @@ import {Artwork} from '@prisma/client';
 const searchFields: Array<keyof Artwork> = [
   'title',
   'medium',
-  'creditLine',
   'origin',
+  'artist',
+  'type',
 ];
 
 const sortFields: {

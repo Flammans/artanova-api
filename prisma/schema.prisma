@@ -28,11 +28,12 @@ model Artwork {
   sourceName SourceName
   sourceId   String     @db.VarChar(36)
   title      String     @db.VarChar
+  type       String?    @db.VarChar
   url        String?    @db.VarChar
-  creditLine String?    @db.VarChar
   date       String?    @db.VarChar
   yearFrom   Int?       @db.SmallInt
   yearTo     Int?       @db.SmallInt
+  artist     String?    @db.VarChar
   origin     String?    @db.VarChar
   medium     String?    @db.VarChar
   preview    String     @db.VarChar
