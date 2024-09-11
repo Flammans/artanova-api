@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
     origin: z.string().optional(),
     yearFrom: z.coerce.number().optional(),
     yearTo: z.coerce.number().optional(),
+    type: z.string().optional(),
   }).parse);
 
   const prisma = usePrisma();
@@ -77,6 +78,9 @@ export default defineEventHandler(async (event) => {
         yearFrom: {
           lte: query.yearTo,
         },
+      } : {}),
+      ...(query.type ? {
+        type: query.type,
       } : {}),
     },
   });

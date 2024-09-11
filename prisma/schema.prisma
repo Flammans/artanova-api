@@ -44,6 +44,7 @@ model Artwork {
 
   @@unique([sourceName, sourceId])
   @@index([sourceName])
+  @@index([type])
 }
 
 model Collection {
