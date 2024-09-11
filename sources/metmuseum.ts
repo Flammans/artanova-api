@@ -1,5 +1,5 @@
 import Bottleneck from 'bottleneck';
-import {SourceName} from '@prisma/client';
+import {SourceName, Prisma} from '@prisma/client';
 
 /** @see https://metmuseum.github.io/ */
 const sourceName: SourceName = 'metmuseum';
@@ -90,11 +90,13 @@ async function importObject (objectID: number) {
     sourceId: `${objectID}`,
   };
 
-  const attributes = {
+  const attributes: Omit<Prisma.ArtworkCreateInput, keyof typeof sourceName_sourceId> = {
     title: object.title,
     url: object.objectURL,
     creditLine: object.creditLine,
     date: object.objectDate,
+    yearFrom: object.objectBeginDate,
+    yearTo: object.objectEndDate,
     origin: object.country,
     medium: object.medium,
     preview: object.primaryImageSmall,

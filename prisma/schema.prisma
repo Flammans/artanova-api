@@ -31,6 +31,8 @@ model Artwork {
   url        String?    @db.VarChar
   creditLine String?    @db.VarChar
   date       String?    @db.VarChar
+  yearFrom   Int?       @db.SmallInt
+  yearTo     Int?       @db.SmallInt
   origin     String?    @db.VarChar
   medium     String?    @db.VarChar
   preview    String     @db.VarChar
