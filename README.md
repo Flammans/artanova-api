@@ -1,9 +1,18 @@
 # Exhibition Curator Project API
 
-The project is hosted on [Render](https://render.com/) (both API and database)
-but can be deployed on any other platform that supports Node.js.
+This project is hosted on [Render](https://render.com/) (both API and database)
+but can be deployed on any platform that supports Node.js.
 
-The project uses [Nitro](https://nitro.unjs.io/) as a framework and PostgreSQL as a database.
+The backend is built using the Nitro framework, with PostgreSQL as the database.
+
+The API retrieves artwork data from multiple configurable sources.
+Data is fetched periodically to ensure the database remains up-to-date.
+
+To automate this process, the project utilizes the Nitro tasks feature,
+functioning similarly to cron jobs.
+Artwork data is updated hourly,
+fetching the latest information from external sources
+and synchronizing it with the PostgreSQL database.
 
 ## Local run
 
