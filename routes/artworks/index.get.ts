@@ -26,9 +26,11 @@ export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
     limit: z.coerce.number().int().positive().max(1_000).default(10),
     cursor: z.number().optional(),
-    query: z.string().optional(),
+    search: z.string().optional(),
     sort: z.enum([...sortFields.nullable, ...sortFields.notNullable] as any).default('updatedAt'),
     order: z.enum(['asc', 'desc']).default('desc'),
+    artist: z.string().optional(),
+    origin: z.string().optional(),
   }).parse);
 
   const prisma = usePrisma();
@@ -47,12 +49,22 @@ export default defineEventHandler(async (event) => {
           [query.sort]: null,
         },
       } : {}),
-      ...(query ? {
+      ...(query.search ? {
         OR: searchFields.map((field) => ({
           [field]: {
-            search: query,
+            search: query.search,
           },
         })),
+      } : {}),
+      ...(query.artist ? {
+        artist: {
+          search: query.artist,
+        },
+      } : {}),
+      ...(query.origin ? {
+        origin: {
+          search: query.origin,
+        },
       } : {}),
     },
   });
