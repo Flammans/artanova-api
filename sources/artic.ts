@@ -54,6 +54,7 @@ async function importObject (object: any, config: any) {
     sourceId: `${object.id}`,
   };
 
+  /** @see https://api.artic.edu/docs/#artworks-2 */
   const attributes: Omit<Prisma.ArtworkCreateInput, keyof typeof sourceName_sourceId> = {
     title: object.title,
     url: `${config.website_url}/artworks/${object.id}`,

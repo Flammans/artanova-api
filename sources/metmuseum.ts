@@ -90,6 +90,7 @@ async function importObject (objectID: number) {
     sourceId: `${objectID}`,
   };
 
+  /** @see https://metmuseum.github.io/#response-1 */
   const attributes: Omit<Prisma.ArtworkCreateInput, keyof typeof sourceName_sourceId> = {
     title: object.title,
     url: object.objectURL,
