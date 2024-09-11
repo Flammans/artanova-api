@@ -23,7 +23,7 @@ const sortFields: {
 };
 
 export default defineEventHandler(async (event) => {
-  const {limit, cursor, query, sort, order} = await getValidatedQuery(event, z.object({
+  const query = await getValidatedQuery(event, z.object({
     limit: z.coerce.number().int().positive().max(1_000).default(10),
     cursor: z.number().optional(),
     query: z.string().optional(),
@@ -34,17 +34,17 @@ export default defineEventHandler(async (event) => {
   const prisma = usePrisma();
 
   const artworks = await prisma.artwork.findMany({
-    take: limit,
-    cursor: cursor ? {
-      id: cursor,
+    take: query.limit,
+    cursor: query.cursor ? {
+      id: query.cursor,
     } : undefined,
     orderBy: {
-      [sort]: order,
+      [query.sort]: query.order,
     },
     where: {
-      ...(sortFields.nullable.includes(sort) ? {
+      ...(sortFields.nullable.includes(query.sort) ? {
         NOT: {
-          [sort]: null,
+          [query.sort]: null,
         },
       } : {}),
       ...(query ? {
