@@ -65,9 +65,10 @@ export default defineEventHandler(async (event) => {
         },
       } : {}),
       ...(query.origin ? {
-        origin: {
-          search: query.origin,
-        },
+        origin: query.origin,
+      } : {}),
+      ...(query.type ? {
+        type: query.type,
       } : {}),
       ...(query.yearFrom !== undefined ? {
         yearTo: {
@@ -78,9 +79,6 @@ export default defineEventHandler(async (event) => {
         yearFrom: {
           lte: query.yearTo,
         },
-      } : {}),
-      ...(query.type ? {
-        type: query.type,
       } : {}),
     },
   });

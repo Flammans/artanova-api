@@ -1,18 +1,18 @@
 export default defineEventHandler(async (event) => {
   const groups = await usePrisma().artwork.groupBy({
-    by: ['type'],
+    by: ['origin'],
     _count: {
-      type: true,
+      origin: true,
     },
     where: {
       AND: [
         {
-          type: {
+          origin: {
             not: null,
           },
         },
         {
-          type: {
+          origin: {
             not: '',
           },
         },
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     },
     orderBy: {
       _count: {
-        type: 'desc',
+        origin: 'desc',
       },
     },
   });
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
   const result = {};
 
   for (const group of groups) {
-    result[group.type] = group._count.type;
+    result[group.origin] = group._count.origin;
   }
 
   return result;
