@@ -31,6 +31,8 @@ export default defineEventHandler(async (event) => {
     order: z.enum(['asc', 'desc']).default('desc'),
     artist: z.string().optional(),
     origin: z.string().optional(),
+    yearFrom: z.coerce.number().optional(),
+    yearTo: z.coerce.number().optional(),
   }).parse);
 
   const prisma = usePrisma();
@@ -64,6 +66,16 @@ export default defineEventHandler(async (event) => {
       ...(query.origin ? {
         origin: {
           search: query.origin,
+        },
+      } : {}),
+      ...(query.yearFrom !== undefined ? {
+        yearTo: {
+          gte: query.yearFrom,
+        },
+      } : {}),
+      ...(query.yearTo !== undefined ? {
+        yearFrom: {
+          lte: query.yearTo,
         },
       } : {}),
     },
