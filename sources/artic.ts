@@ -45,7 +45,7 @@ async function fetchItems (page: number, limit: number) {
 }
 
 async function importObject (object: any, config: any) {
-  if (!object.image_id) {
+  if (!object.image_id || object.image_id === '342b2214-04d5-de63-b577-55a08a618960') {
     return;
   }
 
