@@ -30,10 +30,14 @@ export default defineEventHandler(async (event) => {
     sort: z.enum([...sortFields.nullable, ...sortFields.notNullable] as any).default('updatedAt'),
     order: z.enum(['asc', 'desc']).default('desc'),
     artist: z.string().optional(),
-    origin: z.string().optional(),
+    origins: z.string().optional().transform((origins) => origins
+        ? origins.split(',').map(origin => decodeURIComponent(origin))
+        : undefined),
     yearFrom: z.coerce.number().optional(),
     yearTo: z.coerce.number().optional(),
-    type: z.string().optional(),
+    types: z.string().optional().transform((types) => types
+        ? types.split(',').map(type => decodeURIComponent(type))
+        : undefined),
   }).parse);
 
   const prisma = usePrisma();
@@ -64,11 +68,15 @@ export default defineEventHandler(async (event) => {
           search: query.artist,
         },
       } : {}),
-      ...(query.origin ? {
-        origin: query.origin,
+      ...(query.origins ? {
+        origin: {
+          in: query.origins,
+        },
       } : {}),
-      ...(query.type ? {
-        type: query.type,
+      ...(query.types ? {
+        type: {
+          in: query.types,
+        },
       } : {}),
       ...(query.yearFrom !== undefined ? {
         yearTo: {
