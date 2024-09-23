@@ -1,6 +1,6 @@
-import {defineEventHandler, getValidatedQuery} from 'h3';
-import {z} from 'zod';
-import {Artwork} from '@prisma/client';
+import { defineEventHandler, getValidatedQuery } from 'h3'
+import { z } from 'zod'
+import { Artwork } from '@prisma/client'
 
 const searchFields: Array<keyof Artwork> = [
   'title',
@@ -8,7 +8,7 @@ const searchFields: Array<keyof Artwork> = [
   'origin',
   'artist',
   'type',
-];
+]
 
 const sortFields: {
   [key in 'notNullable' | 'nullable']: Array<keyof Artwork>
@@ -20,30 +20,31 @@ const sortFields: {
     'yearFrom',
     'yearTo',
   ],
-};
+}
 
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, z.object({
     limit: z.coerce.number().int().positive().max(1_000).default(10),
-    cursor: z.number().optional(),
+    cursor: z.coerce.number().optional(),
     search: z.string().optional(),
     sort: z.enum([...sortFields.nullable, ...sortFields.notNullable] as any).default('updatedAt'),
     order: z.enum(['asc', 'desc']).default('desc'),
     artist: z.string().optional(),
     origins: z.string().optional().transform((origins) => origins
-        ? origins.split(',').map(origin => decodeURIComponent(origin))
-        : undefined),
+      ? origins.split(',').map(origin => decodeURIComponent(origin))
+      : undefined),
     yearFrom: z.coerce.number().optional(),
     yearTo: z.coerce.number().optional(),
     types: z.string().optional().transform((types) => types
-        ? types.split(',').map(type => decodeURIComponent(type))
-        : undefined),
-  }).parse);
+      ? types.split(',').map(type => decodeURIComponent(type))
+      : undefined),
+  }).parse)
 
-  const prisma = usePrisma();
+  const prisma = usePrisma()
 
   const artworks = await prisma.artwork.findMany({
     take: query.limit,
+    skip: query.cursor ? 1 : undefined,
     cursor: query.cursor ? {
       id: query.cursor,
     } : undefined,
@@ -89,7 +90,7 @@ export default defineEventHandler(async (event) => {
         },
       } : {}),
     },
-  });
+  })
 
-  return artworks;
-});
+  return artworks
+})
