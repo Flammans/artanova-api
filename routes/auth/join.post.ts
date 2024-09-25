@@ -1,17 +1,17 @@
-import {z} from 'zod';
-import {sha256} from 'ohash';
+import { z } from 'zod'
+import { sha256 } from 'ohash'
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string().min(8),
-  }).parse);
+  }).parse)
 
-  const prisma = usePrisma();
+  const prisma = usePrisma()
 
-  if (await prisma.user.findUnique({where: {email: body.email}})) {
-    throw new Error('Email already in use');
+  if (await prisma.user.findUnique({ where: { email: body.email } })) {
+    throw new Error('Email already in use')
   }
 
   const user = await prisma.user.create({
@@ -20,11 +20,12 @@ export default defineEventHandler(async (event) => {
       email: body.email,
       password: sha256(body.password),
     },
-  });
+  })
 
   return {
+    id: user.id,
     name: user.name,
     email: user.email,
     token: await useUser().generateToken(user),
-  };
-});
+  }
+})
