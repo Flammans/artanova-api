@@ -1,6 +1,6 @@
 # Exhibition Curator Project API
 
-This project is hosted on [Render](https://render.com/) (both API and database)
+This project is hosted on [Railway](https://railway.app/) (both API and database)
 but can be deployed on any platform that supports Node.js.
 
 The backend is built using the Nitro framework, with PostgreSQL as the database.
