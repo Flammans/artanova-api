@@ -14,6 +14,8 @@ Artwork data is updated hourly,
 fetching the latest information from external sources
 and synchronizing it with the PostgreSQL database.
 
+To trigger the update manually, you can open `/update`.
+
 ## Local run
 
 You can run the server using Docker or manually.
