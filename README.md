@@ -1,4 +1,8 @@
-# Exhibition Curator Project API
+# Artanova frontend
+
+See https://github.com/Flammans/artanova
+
+# Artanova backend
 
 This project is hosted on [Railway](https://railway.app/) (both API and database)
 but can be deployed on any platform that supports Node.js.
