@@ -9,7 +9,10 @@ but can be deployed on any platform that supports Node.js.
 
 The backend is built using the Nitro framework, with PostgreSQL as the database.
 
-The API retrieves artwork data from multiple configurable sources.
+The API retrieves artwork data from multiple configurable sources, such as:
+- **The Art Institute of Chicago**: [https://api.artic.edu/docs/](https://api.artic.edu/docs/)
+- **The Metropolitan Museum of Art Collection**: [https://metmuseum.github.io](https://metmuseum.github.io)
+
 Data is fetched periodically to ensure the database remains up-to-date.
 
 To automate this process, the project utilizes the Nitro tasks feature,
